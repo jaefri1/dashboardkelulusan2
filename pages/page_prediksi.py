@@ -1,17 +1,39 @@
-import streamlit as st
-import numpy as np
-
-def show_prediksi():
-    st.title("🔮 Formulir Prediksi Kelulusan")
-
-    st.write("Masukkan data untuk memprediksi apakah mahasiswa akan lulus:")
-
-    umur = st.slider("Umur", 17, 35, 21)
-    ipk = st.slider("IPK", 0.0, 4.0, 3.0, 0.01)
-    sks = st.slider("Jumlah SKS", 0, 160, 110)
-
-    if st.button("Prediksi"):
-        if ipk >= 2.75 and sks >= 110:
-            st.success("✅ Diprediksi: Lulus")
+      prediction = model.predict(input_data)
+        probability = model.predict_proba(input_data)
+        
+        # Tampilkan hasil
+        st.subheader("Hasil Prediksi")
+        
+        if prediction[0] == 1:
+            st.success("### Mahasiswa diprediksi LULUS 🎉")
+            st.write(f"Probabilitas: {probability[0][1]*100:.2f}%")
         else:
-            st.error("❌ Diprediksi: Tidak Lulus")
+            st.error("### Mahasiswa diprediksi TIDAK LULUS ❌")
+            st.write(f"Probabilitas: {probability[0][0]*100:.2f}%")
+        
+        # Visualisasi probabilitas
+        fig, ax = plt.subplots(figsize=(8, 3))
+        ax.barh(['Tidak Lulus', 'Lulus'], probability[0], color=['#ff6b6b', '#51cf66'])
+        ax.set_xlim(0, 1)
+        ax.set_xlabel('Probabilitas')
+        ax.set_title('Probabilitas Kelulusan')
+        st.pyplot(fig)
+        
+        # Rekomendasi berdasarkan hasil
+        st.subheader("Rekomendasi")
+        if prediction[0] == 0:
+            st.write("""
+            Berdasarkan prediksi, mahasiswa memiliki risiko tidak lulus. Berikut rekomendasi:
+            - **Tingkatkan IPK**: Fokus pada mata kuliah dengan nilai rendah
+            - **Kurangi mata kuliah tidak lulus**: Cari bantuan akademik untuk mata kuliah yang sulit
+            - **Perbaiki kehadiran**: Tingkatkan frekuensi kehadiran di kelas
+            - **Manajemen waktu**: Jika bekerja sambil kuliah, atur jadwal dengan lebih baik
+            """)
+        else:
+            st.write("""
+            Prediksi menunjukkan mahasiswa memiliki potensi lulus. Untuk mempertahankan performa:
+            - **Pertahankan IPK**: Lanjutkan kinerja akademik yang baik
+            - **Pantau IPS tren**: Pastikan tren positif terus berlanjut
+            - **Perhatikan beban kerja**: Jaga keseimbangan antara pekerjaan dan studi
+            - **Persiapkan akhir studi**: Fokus pada penyelesaian tugas akhir atau skripsi
+            """)
